@@ -13,8 +13,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Sparkles, Info } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
-import { IpcClient } from "@/ipc/ipc_client";
-import { hasDyadProKey, type UserSettings } from "@/lib/schemas";
+import { toast } from "sonner";
+import { type UserSettings } from "@/lib/schemas";
 
 export function ProModeSelector() {
   const { settings, updateSettings } = useSettings();
@@ -58,8 +58,17 @@ export function ProModeSelector() {
     });
   };
 
-  const hasProKey = settings ? hasDyadProKey(settings) : false;
-  const proModeTogglable = hasProKey && Boolean(settings?.enableDyadPro);
+  const proFeaturesEnabled = Boolean(settings?.proFeaturesEnabled);
+  const proModeTogglable = proFeaturesEnabled;
+
+  const handleUnlockProModes = async () => {
+    if (!proFeaturesEnabled) {
+      await updateSettings({ proFeaturesEnabled: true });
+      toast("Pro modes unlocked", {
+        description: "Advanced features have been activated.",
+      });
+    }
+  };
 
   return (
     <Popover>
@@ -87,18 +96,15 @@ export function ProModeSelector() {
             </h4>
             <div className="h-px bg-gradient-to-r from-primary/50 via-primary/20 to-transparent" />
           </div>
-          {!hasProKey && (
+          {!proFeaturesEnabled && (
             <div className="text-sm text-center text-muted-foreground">
-              <a
+              <button
+                type="button"
                 className="inline-flex items-center justify-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm font-medium text-primary shadow-sm transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                onClick={() => {
-                  IpcClient.getInstance().openExternalUrl(
-                    "https://dyad.sh/pro#ai",
-                  );
-                }}
+                onClick={handleUnlockProModes}
               >
                 Unlock Pro modes
-              </a>
+              </button>
             </div>
           )}
           <div className="flex flex-col gap-5">
@@ -107,7 +113,7 @@ export function ProModeSelector() {
               label="Enable Dyad Pro"
               description="Use Dyad Pro AI credits"
               tooltip="Uses Dyad Pro AI credits for the main AI model and Pro modes."
-              isTogglable={hasProKey}
+              isTogglable={proFeaturesEnabled}
               settingEnabled={Boolean(settings?.enableDyadPro)}
               toggle={toggleProEnabled}
             />

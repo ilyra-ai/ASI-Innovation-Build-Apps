@@ -220,6 +220,7 @@ export const UserSettingsSchema = z.object({
   telemetryUserId: z.string().optional(),
   hasRunBefore: z.boolean().optional(),
   enableDyadPro: z.boolean().optional(),
+  proFeaturesEnabled: z.boolean().optional(),
   experiments: ExperimentsSchema.optional(),
   lastShownReleaseNotesVersion: z.string().optional(),
   maxChatTurnsInContext: z.number().optional(),
