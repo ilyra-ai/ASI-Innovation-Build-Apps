@@ -72,8 +72,8 @@ export const TitleBar = () => {
     }
   };
 
-  const isDyadPro = !!settings?.providerSettings?.auto?.apiKey?.value;
-  const isDyadProEnabled = Boolean(settings?.enableDyadPro);
+  const isDyadPro = settings?.enableDyadPro !== false;
+  const isDyadProEnabled = settings?.enableDyadPro !== false;
 
   return (
     <>
@@ -225,9 +225,11 @@ export function DyadProButton({
 }
 
 export function AICreditStatus({ userBudget }: { userBudget: UserBudgetInfo }) {
-  const remaining = Math.round(
+  const remainingRaw = Math.round(
     userBudget.totalCredits - userBudget.usedCredits,
   );
+  const remaining =
+    userBudget.totalCredits >= Number.MAX_SAFE_INTEGER ? "∞" : remainingRaw;
   return (
     <Tooltip>
       <TooltipTrigger>
