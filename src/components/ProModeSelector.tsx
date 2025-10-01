@@ -13,19 +13,24 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Sparkles, Info } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
-import { toast } from "sonner";
 import { type UserSettings } from "@/lib/schemas";
 
 export function ProModeSelector() {
   const { settings, updateSettings } = useSettings();
 
   const toggleWebSearch = () => {
+    if (!settings?.enableDyadPro) {
+      return;
+    }
     updateSettings({
       enableProWebSearch: !settings?.enableProWebSearch,
     });
   };
 
   const toggleLazyEdits = () => {
+    if (!settings?.enableDyadPro) {
+      return;
+    }
     updateSettings({
       enableProLazyEditsMode: !settings?.enableProLazyEditsMode,
     });
@@ -34,6 +39,9 @@ export function ProModeSelector() {
   const handleSmartContextChange = (
     newValue: "off" | "conservative" | "balanced",
   ) => {
+    if (!settings?.enableDyadPro) {
+      return;
+    }
     if (newValue === "off") {
       updateSettings({
         enableProSmartFilesContextMode: false,
@@ -53,22 +61,23 @@ export function ProModeSelector() {
   };
 
   const toggleProEnabled = () => {
+    const nextValue = !settings?.enableDyadPro;
+    if (nextValue) {
+      updateSettings({
+        enableDyadPro: true,
+      });
+      return;
+    }
     updateSettings({
-      enableDyadPro: !settings?.enableDyadPro,
+      enableDyadPro: false,
+      enableProWebSearch: false,
+      enableProLazyEditsMode: false,
+      enableProSmartFilesContextMode: false,
+      proSmartContextOption: undefined,
     });
   };
 
-  const proFeaturesEnabled = Boolean(settings?.proFeaturesEnabled);
-  const proModeTogglable = proFeaturesEnabled;
-
-  const handleUnlockProModes = async () => {
-    if (!proFeaturesEnabled) {
-      await updateSettings({ proFeaturesEnabled: true });
-      toast("Pro modes unlocked", {
-        description: "Advanced features have been activated.",
-      });
-    }
-  };
+  const proModeEnabled = Boolean(settings?.enableDyadPro);
 
   return (
     <Popover>
@@ -96,24 +105,22 @@ export function ProModeSelector() {
             </h4>
             <div className="h-px bg-gradient-to-r from-primary/50 via-primary/20 to-transparent" />
           </div>
-          {!proFeaturesEnabled && (
-            <div className="text-sm text-center text-muted-foreground">
-              <button
-                type="button"
-                className="inline-flex items-center justify-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm font-medium text-primary shadow-sm transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                onClick={handleUnlockProModes}
-              >
-                Unlock Pro modes
-              </button>
-            </div>
-          )}
+          <div className="text-sm text-center text-muted-foreground">
+            <button
+              type="button"
+              className="inline-flex items-center justify-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm font-medium text-primary shadow-sm transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              disabled
+            >
+              Unlock Pro modes
+            </button>
+          </div>
           <div className="flex flex-col gap-5">
             <SelectorRow
               id="pro-enabled"
               label="Enable Dyad Pro"
               description="Use Dyad Pro AI credits"
               tooltip="Uses Dyad Pro AI credits for the main AI model and Pro modes."
-              isTogglable={proFeaturesEnabled}
+              isTogglable={true}
               settingEnabled={Boolean(settings?.enableDyadPro)}
               toggle={toggleProEnabled}
             />
@@ -122,7 +129,7 @@ export function ProModeSelector() {
               label="Web Search"
               description="Search the web for information"
               tooltip="Uses the web to search for information"
-              isTogglable={proModeTogglable}
+              isTogglable={proModeEnabled}
               settingEnabled={Boolean(settings?.enableProWebSearch)}
               toggle={toggleWebSearch}
             />
@@ -131,12 +138,12 @@ export function ProModeSelector() {
               label="Turbo Edits"
               description="Makes file edits faster and cheaper"
               tooltip="Uses a faster, cheaper model to generate full file updates."
-              isTogglable={proModeTogglable}
+              isTogglable={proModeEnabled}
               settingEnabled={Boolean(settings?.enableProLazyEditsMode)}
               toggle={toggleLazyEdits}
             />
             <SmartContextSelector
-              isTogglable={proModeTogglable}
+              isTogglable={proModeEnabled}
               settings={settings}
               onValueChange={handleSmartContextChange}
             />
