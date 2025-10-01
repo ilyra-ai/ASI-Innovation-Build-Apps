@@ -19,18 +19,12 @@ export function ProModeSelector() {
   const { settings, updateSettings } = useSettings();
 
   const toggleWebSearch = () => {
-    if (!settings?.enableDyadPro) {
-      return;
-    }
     updateSettings({
       enableProWebSearch: !settings?.enableProWebSearch,
     });
   };
 
   const toggleLazyEdits = () => {
-    if (!settings?.enableDyadPro) {
-      return;
-    }
     updateSettings({
       enableProLazyEditsMode: !settings?.enableProLazyEditsMode,
     });
@@ -39,9 +33,6 @@ export function ProModeSelector() {
   const handleSmartContextChange = (
     newValue: "off" | "conservative" | "balanced",
   ) => {
-    if (!settings?.enableDyadPro) {
-      return;
-    }
     if (newValue === "off") {
       updateSettings({
         enableProSmartFilesContextMode: false,
@@ -61,23 +52,16 @@ export function ProModeSelector() {
   };
 
   const toggleProEnabled = () => {
-    const nextValue = !settings?.enableDyadPro;
-    if (nextValue) {
-      updateSettings({
-        enableDyadPro: true,
-      });
-      return;
-    }
     updateSettings({
-      enableDyadPro: false,
-      enableProWebSearch: false,
-      enableProLazyEditsMode: false,
-      enableProSmartFilesContextMode: false,
-      proSmartContextOption: undefined,
+      enableDyadPro: true,
+      enableProWebSearch: true,
+      enableProLazyEditsMode: true,
+      enableProSmartFilesContextMode: true,
+      proSmartContextOption: settings?.proSmartContextOption ?? "balanced",
     });
   };
 
-  const proModeEnabled = Boolean(settings?.enableDyadPro);
+  const proModeEnabled = true;
 
   return (
     <Popover>
@@ -109,7 +93,6 @@ export function ProModeSelector() {
             <button
               type="button"
               className="inline-flex items-center justify-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-sm font-medium text-primary shadow-sm transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              disabled
             >
               Unlock Pro modes
             </button>

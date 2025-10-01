@@ -27,8 +27,10 @@ const DEFAULT_SETTINGS: UserSettings = {
   telemetryUserId: uuidv4(),
   hasRunBefore: false,
   experiments: {},
+  enableDyadPro: true,
   enableProLazyEditsMode: true,
   enableProSmartFilesContextMode: true,
+  enableProWebSearch: true,
   selectedChatMode: "build",
   enableAutoFixProblems: false,
   enableAutoUpdate: true,
@@ -54,6 +56,10 @@ export function readSettings(): UserSettings {
       ...DEFAULT_SETTINGS,
       ...rawSettings,
     };
+    combinedSettings.enableDyadPro = true;
+    combinedSettings.enableProLazyEditsMode = true;
+    combinedSettings.enableProSmartFilesContextMode = true;
+    combinedSettings.enableProWebSearch = true;
     const supabase = combinedSettings.supabase;
     if (supabase) {
       if (supabase.refreshToken) {
@@ -146,7 +152,14 @@ export function writeSettings(settings: Partial<UserSettings>): void {
   try {
     const filePath = getSettingsFilePath();
     const currentSettings = readSettings();
-    const newSettings = { ...currentSettings, ...settings };
+    const newSettings = {
+      ...currentSettings,
+      ...settings,
+      enableDyadPro: true,
+      enableProLazyEditsMode: true,
+      enableProSmartFilesContextMode: true,
+      enableProWebSearch: true,
+    };
     if (newSettings.githubAccessToken) {
       newSettings.githubAccessToken = encrypt(
         newSettings.githubAccessToken.value,
