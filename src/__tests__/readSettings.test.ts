@@ -55,8 +55,10 @@ describe("readSettings", () => {
         {
           "enableAutoFixProblems": false,
           "enableAutoUpdate": true,
+          "enableDyadPro": true,
           "enableProLazyEditsMode": true,
           "enableProSmartFilesContextMode": true,
+          "enableProWebSearch": true,
           "experiments": {},
           "hasRunBefore": false,
           "providerSettings": {},
@@ -301,8 +303,10 @@ describe("readSettings", () => {
         {
           "enableAutoFixProblems": false,
           "enableAutoUpdate": true,
+          "enableDyadPro": true,
           "enableProLazyEditsMode": true,
           "enableProSmartFilesContextMode": true,
+          "enableProWebSearch": true,
           "experiments": {},
           "hasRunBefore": false,
           "providerSettings": {},
