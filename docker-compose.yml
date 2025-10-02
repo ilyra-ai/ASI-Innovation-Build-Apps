@@ -1,27 +1,27 @@
+version: '3.8'
+
 services:
-  dyad-web:
-    container_name: dyad-web
-    profiles:
-      - dev
+  dyad-dev:
+    profiles: ["dev"]
     build:
       context: .
-      dockerfile: docker/Dockerfile.dev
-    environment:
-      NODE_ENV: development
+      dockerfile: Dockerfile.dev
     ports:
-       "${DYAD_WEB_PORT:-5173}:5173"
-    command: ["npx","vite","--. config","vite.renderer.config.mts","--host","0.0.0.0","--port","5173"]
-=======
       - "${DYAD_WEB_PORT:-5173}:5173"
-    command: ["npx","vite","--config","vite.renderer.config.mts","--host","0.0.0.0","--port","5173"]
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_HOST=0.0.0.0
+    command: npm run dev
+
   dyad-prod:
-    container_name: dyad-prod
-    profiles:
-      - prod
+    profiles: ["prod"]
     build:
       context: .
-      dockerfile: docker/Dockerfile.prod
-    environment:
-      NODE_ENV: production
+      dockerfile: Dockerfile.prod
     ports:
       - "${DYAD_PROD_PORT:-8080}:80"
+    environment:
+      - NODE_ENV=production
