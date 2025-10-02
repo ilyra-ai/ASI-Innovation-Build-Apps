@@ -1,10 +1,24 @@
 services:
   dyad-web:
+    container_name: dyad-web
+    profiles:
+      - dev
     build:
       context: .
       dockerfile: docker/Dockerfile.dev
-    ports:
-      - "${DYAD_WEB_PORT:-5173}:5173"
     environment:
       NODE_ENV: development
+    ports:
+      - "${DYAD_WEB_PORT:-5173}:5173"
     command: ["npx","vite","--config","vite.renderer.config.mts","--host","0.0.0.0","--port","5173"]
+  dyad-prod:
+    container_name: dyad-prod
+    profiles:
+      - prod
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.prod
+    environment:
+      NODE_ENV: production
+    ports:
+      - "${DYAD_PROD_PORT:-8080}:80"
