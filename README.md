@@ -1,46 +1,48 @@
-# Dyad
+# 🌟🚀 ASI-Innovation-Build-Apps  
 
-Dyad is a local, open-source AI app builder. It's fast, private, and fully under your control — like Lovable, v0, or Bolt, but running right on your machine.
+✨ **ASI-Innovation-Build-Apps** não é apenas uma ferramenta.  
+É o **novo paradigma da criação de aplicações de IA**, onde o controle absoluto volta para as mãos de quem cria.  
 
-[![Image](https://github.com/user-attachments/assets/f6c83dfc-6ffd-4d32-93dd-4b9c46d17790)](http://dyad.sh/)
+🌱 Imagine um ambiente onde cada linha de código nasce livre, sem limites impostos por servidores distantes, sem a sombra da dependência de terceiros.  
+💡 Um espaço onde você, e apenas você, decide como, quando e onde sua inteligência artificial será construída.  
 
-More info at: [http://dyad.sh/](http://dyad.sh/)
+> 🛡️ **Local, open-source e sob controle total.**  
+> 🖤 Rápida, privada e 100% sua — como Lovable, v0 ou Bolt, mas radicalmente independente.
 
-## 🚀 Features
+---
 
-- ⚡️ **Local**: Fast, private and no lock-in.
-- 🛠 **Bring your own keys**: Use your own AI API keys — no vendor lock-in.
-- 🖥️ **Cross-platform**: Easy to run on Mac or Windows.
+## 🔥 Por que existe?  
 
-## 📦 Download
+Porque inovação sem liberdade é apenas uma promessa vazia.  
+O mundo da IA cresceu rápido demais, mas junto vieram amarras:  
+- ☁️ Dependência de nuvem  
+- 💸 Custos imprevisíveis  
+- 🔒 Falta de controle sobre dados sensíveis  
 
-No sign-up required. Just download and go.
+🌟 **ASI-Innovation-Build-Apps** é a resposta:  
+Um **grito de autonomia** e um ambiente feito para quem não aceita concessões.
 
-### [👉 Download for your platform](https://www.dyad.sh/#download)
+✨ **Velocidade** como sua criatividade  
+✨ **Privacidade** como seus pensamentos mais ousados  
+✨ **Expansão** como o universo da sua imaginação  
 
-## 🤝 Community
+---
 
-Join our growing community of AI app builders on **Reddit**: [r/dyadbuilders](https://www.reddit.com/r/dyadbuilders/) - share your projects and get help from the community!
+## 🐳 Docker — O motor por trás da liberdade  
 
-## 🐳 Docker
+A simplicidade do **Docker Compose** transforma o complexo em elegante.  
+Com apenas um comando, você alterna entre **criação veloz** e **produção sólida**.  
 
-You can run the web renderer locally through Docker Compose. The development profile serves Vite directly, while the production profile builds the static site and serves it with Nginx.
+- ⚡ No **modo dev**: Vite entrega velocidade explosiva, feedback instantâneo e a sensação de estar moldando a realidade em tempo real.  
+- 🏗️ No **modo prod**: Nginx assume o palco, entregando estabilidade, resiliência e performance digna de sistemas em escala global.  
+
+### ⚙️ Comandos prontos para dominar  
 
 ```bash
-# Development server on http://localhost:5173
-docker compose --profile dev up --build
+# 🌱 Desenvolvimento em tempo real
+# Servidor disponível em http://localhost:5173
+DOCKER_BUILDKIT=0 docker compose --profile dev up --build --force-recreate
 
-# Production build served on http://localhost:8080
-docker compose --profile prod up --build
-```
-
-Override the exposed ports by exporting `DYAD_WEB_PORT` or `DYAD_PROD_PORT` before running the commands.
-
-Run `scripts/docker-smoke-test.sh` to automate a basic availability check against either profile. Pass `dev` or `prod` to match the desired configuration.
-
-
-## 🛠️ Contributing
-
-**Dyad** is open-source (Apache 2.0 licensed).
-
-If you're interested in contributing to dyad, please read our [contributing](./CONTRIBUTING.md) doc.
+# 🚀 Produção otimizada e estável
+# Servida em http://localhost:8080
+DOCKER_BUILDKIT=0 docker compose --profile prod up --build
