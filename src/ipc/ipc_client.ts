@@ -65,7 +65,7 @@ import type {
   McpServerUpdate,
   CreateMcpServer,
 } from "./ipc_types";
-import type { Template } from "../shared/templates";
+import { localTemplatesData, type Template } from "../shared/templates";
 import type {
   AppChatContext,
   AppSearchResult,
@@ -147,6 +147,7 @@ export class IpcClient {
     }
   >;
   private mcpConsentHandlers: Map<string, (payload: any) => void>;
+  private browserMode: boolean;
   private constructor() {
     this.chatStreams = new Map();
     this.appStreams = new Map();
@@ -157,6 +158,7 @@ export class IpcClient {
     this.ipcRenderer = hasIpcRenderer
       ? (electronGlobal.ipcRenderer as unknown as IpcRendererAdapter)
       : new BrowserFallbackIpcRenderer();
+    this.browserMode = !hasIpcRenderer;
 
     if (!hasIpcRenderer) {
       console.warn("IPC renderer not available, running in browser mode");
@@ -1266,6 +1268,9 @@ export class IpcClient {
 
   // Template methods
   public async getTemplates(): Promise<Template[]> {
+    if (this.browserMode) {
+      return localTemplatesData;
+    }
     return this.ipcRenderer.invoke("get-templates");
   }
 
