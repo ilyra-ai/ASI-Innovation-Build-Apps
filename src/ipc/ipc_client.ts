@@ -1,4 +1,3 @@
-import type { IpcRenderer } from "electron";
 import {
   type ChatSummary,
   ChatSummariesSchema,
@@ -75,6 +74,32 @@ import type {
 } from "@/lib/schemas";
 import { showError } from "@/lib/toast";
 
+interface IpcRendererAdapter {
+  on: (channel: string, listener: (...args: unknown[]) => void) => IpcRendererAdapter;
+  invoke: (channel: string, ...args: unknown[]) => Promise<any>;
+  removeListener: (
+    channel: string,
+    listener: (...args: unknown[]) => void,
+  ) => IpcRendererAdapter;
+}
+
+class BrowserFallbackIpcRenderer implements IpcRendererAdapter {
+  on(_channel: string, _listener: (...args: unknown[]) => void): IpcRendererAdapter {
+    return this;
+  }
+
+  async invoke(channel: string, ..._args: unknown[]): Promise<never> {
+    throw new Error(`IPC renderer is not available in browser mode for channel ${channel}`);
+  }
+
+  removeListener(
+    _channel: string,
+    _listener: (...args: unknown[]) => void,
+  ): IpcRendererAdapter {
+    return this;
+  }
+}
+
 export interface ChatStreamCallbacks {
   onUpdate: (messages: Message[]) => void;
   onEnd: (response: ChatResponseEnd) => void;
@@ -110,7 +135,7 @@ interface DeleteCustomModelParams {
 
 export class IpcClient {
   private static instance: IpcClient;
-  private ipcRenderer: IpcRenderer;
+  private ipcRenderer: IpcRendererAdapter;
   private chatStreams: Map<number, ChatStreamCallbacks>;
   private appStreams: Map<number, AppStreamCallbacks>;
   private helpStreams: Map<
@@ -123,11 +148,20 @@ export class IpcClient {
   >;
   private mcpConsentHandlers: Map<string, (payload: any) => void>;
   private constructor() {
-    this.ipcRenderer = (window as any).electron.ipcRenderer as IpcRenderer;
     this.chatStreams = new Map();
     this.appStreams = new Map();
     this.helpStreams = new Map();
     this.mcpConsentHandlers = new Map();
+    const electronGlobal = (window as any).electron;
+    const hasIpcRenderer = Boolean(electronGlobal?.ipcRenderer);
+    this.ipcRenderer = hasIpcRenderer
+      ? (electronGlobal.ipcRenderer as unknown as IpcRendererAdapter)
+      : new BrowserFallbackIpcRenderer();
+
+    if (!hasIpcRenderer) {
+      console.warn("IPC renderer not available, running in browser mode");
+      return;
+    }
     // Set up listeners for stream events
     this.ipcRenderer.on("chat:response:chunk", (data) => {
       if (
