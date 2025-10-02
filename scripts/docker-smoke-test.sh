@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 PROFILE="${1:-prod}"
+
 if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
   COMPOSE=(docker compose)
 elif command -v docker-compose >/dev/null 2>&1; then
   COMPOSE=(docker-compose)
 else
   echo "docker compose command not found" >&2
+if ! command -v docker >/dev/null 2>&1; then
+  echo "docker command not found" >&2
   exit 127
 fi
 if ! command -v curl >/dev/null 2>&1; then
@@ -22,6 +25,10 @@ cleanup() {
 }
 trap cleanup EXIT
 "${COMPOSE[@]}" --profile "$PROFILE" up --build -d
+  docker compose --profile "$PROFILE" down --volumes >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
+docker compose --profile "$PROFILE" up --build -d
 if [ "$PROFILE" = "prod" ]; then
   PORT="${DYAD_PROD_PORT:-8080}"
 else
@@ -31,6 +38,8 @@ URL="http://localhost:$PORT"
 for _ in $(seq 1 120); do
   if curl -sf "$URL" >/dev/null 2>&1; then
     STATUS=$("${COMPOSE[@]}" --profile "$PROFILE" ps --status running --services)
+    STATUS=$(docker compose --profile "$PROFILE" ps --status running --services)
+
     if [ -n "$STATUS" ]; then
       exit 0
     fi
@@ -44,6 +53,14 @@ for _ in $(seq 1 120); do
   if [ "${#EXITED[@]}" -gt 0 ]; then
     for SERVICE in "${EXITED[@]}"; do
       "${COMPOSE[@]}" --profile "$PROFILE" logs "$SERVICE"
+  if ! docker compose --profile "$PROFILE" ps >/dev/null 2>&1; then
+    echo "compose process exited unexpectedly" >&2
+    exit 1
+  fi
+  mapfile -t EXITED < <(docker compose --profile "$PROFILE" ps --services --status exited)
+  if [ "${#EXITED[@]}" -gt 0 ]; then
+    for SERVICE in "${EXITED[@]}"; do
+      docker compose --profile "$PROFILE" logs "$SERVICE"
     done
     echo "service exited with errors" >&2
     exit 1
