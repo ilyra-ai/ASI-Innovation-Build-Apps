@@ -36,8 +36,6 @@ docker compose --profile prod up --build
 
 Override the exposed ports by exporting `DYAD_WEB_PORT` or `DYAD_PROD_PORT` before running the commands.
 
-Run `scripts/docker-smoke-test.sh` to automate a basic availability check against either profile. Pass `dev` or `prod` to match the desired configuration.
-
 ## 🛠️ Contributing
 
 **Dyad** is open-source (Apache 2.0 licensed).
