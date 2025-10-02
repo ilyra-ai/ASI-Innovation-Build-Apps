@@ -1,0 +1,29 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Instalar dependências do sistema
+RUN apk add --no-cache \
+    git \
+    python3 \
+    make \
+    g++
+
+# Copiar arquivos de dependências
+COPY package*.json ./
+COPY pnpm-lock.yaml* ./
+
+# Instalar pnpm
+RUN npm install -g pnpm
+
+# Instalar dependências do projeto
+RUN pnpm install
+
+# Copiar código fonte
+COPY . .
+
+# Expor porta do Vite
+EXPOSE 5173
+
+# Comando padrão
+CMD ["pnpm", "run", "dev", "--host", "0.0.0.0"]
