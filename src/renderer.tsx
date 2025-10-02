@@ -4,7 +4,7 @@ import { router } from "./router";
 import { RouterProvider } from "@tanstack/react-router";
 import { PostHogProvider } from "posthog-js/react";
 import posthog from "posthog-js";
-import { getTelemetryUserId, isTelemetryOptedIn } from "./hooks/useSettings";
+import { isTelemetryOptedIn } from "./hooks/useSettings";
 import {
   QueryCache,
   QueryClient,
@@ -67,21 +67,9 @@ const posthogClient = posthog.init(
         console.debug("Telemetry not opted in, skipping event");
         return null;
       }
-      const telemetryUserId = getTelemetryUserId();
-      if (telemetryUserId) {
-        posthogClient.identify(telemetryUserId);
-      }
-
       if (event?.properties["$ip"]) {
         event.properties["$ip"] = null;
       }
-
-      console.debug(
-        "Telemetry opted in - UUID:",
-        telemetryUserId,
-        "sending event",
-        event,
-      );
       return event;
     },
     persistence: "localStorage",
@@ -93,6 +81,9 @@ function App() {
     // Subscribe to navigation state changes
     const unsubscribe = router.subscribe("onResolved", (navigation) => {
       // Capture the navigation event in PostHog
+      if (!isTelemetryOptedIn()) {
+        return;
+      }
       posthog.capture("navigation", {
         toPath: navigation.toLocation.pathname,
         fromPath: navigation.fromLocation?.pathname,
