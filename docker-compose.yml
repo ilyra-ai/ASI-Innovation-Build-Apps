@@ -6,15 +6,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
+      target: development
     ports:
       - "${DYAD_WEB_PORT:-5173}:5173"
     volumes:
       - .:/app
       - /app/node_modules
+      - /app/.pnpm-store
     environment:
       - NODE_ENV=development
-      - VITE_HOST=0.0.0.0
-    command: npm run dev
+    stdin_open: true
+    tty: true
 
   dyad-prod:
     profiles: ["prod"]
