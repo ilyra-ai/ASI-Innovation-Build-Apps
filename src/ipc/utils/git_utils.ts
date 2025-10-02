@@ -42,9 +42,26 @@ export async function gitCommit({
       command += " --amend";
     }
 
-    await verboseExecAsync(command);
-    const { stdout } = await execAsync(`git -C "${path}" rev-parse HEAD`);
-    return stdout.trim();
+    try {
+      await verboseExecAsync(command);
+      const { stdout } = await execAsync(`git -C "${path}" rev-parse HEAD`);
+      return stdout.trim();
+    } catch (error) {
+      const messageText = error instanceof Error ? error.message : String(error);
+      if (
+        messageText.includes("Author identity unknown") ||
+        messageText.includes("empty ident name")
+      ) {
+        return git.commit({
+          fs: fs,
+          dir: path,
+          message,
+          author: await getGitAuthor(),
+          amend: amend,
+        });
+      }
+      throw error;
+    }
   } else {
     return git.commit({
       fs: fs,
