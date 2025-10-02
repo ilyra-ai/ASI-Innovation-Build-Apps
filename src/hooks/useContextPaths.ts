@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAtomValue } from "jotai";
 import { selectedAppIdAtom } from "@/atoms/appAtoms";
@@ -7,6 +8,11 @@ import { GlobPath, ContextPathResults } from "@/lib/schemas";
 export function useContextPaths() {
   const queryClient = useQueryClient();
   const appId = useAtomValue(selectedAppIdAtom);
+  const [sortKey, setSortKey] = useState<"tokens" | "files" | "rule">("tokens");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [ruleFilter, setRuleFilter] = useState<
+    "all" | "include" | "autoInclude" | "exclude"
+  >("all");
 
   const {
     data: contextPathsData,
@@ -118,5 +124,11 @@ export function useContextPaths() {
     updateContextPaths,
     updateSmartContextAutoIncludes,
     updateExcludePaths,
+    sortKey,
+    sortDirection,
+    ruleFilter,
+    setSortKey,
+    setSortDirection,
+    setRuleFilter,
   };
 }
