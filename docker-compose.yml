@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.dev
-    ports:
-      - "${DYAD_WEB_PORT:-5173}:5173"
     environment:
       NODE_ENV: development
+    ports:
+      - "${DYAD_WEB_PORT:-5173}:5173"
     command: ["npx","vite","--config","vite.renderer.config.mts","--host","0.0.0.0","--port","5173"]
