@@ -1,0 +1,7 @@
+services:
+  dyad-prod:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.prod
+    ports:
+      - "${DYAD_PROD_PORT:-8080}:80"
