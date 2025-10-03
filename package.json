@@ -1,6 +1,6 @@
 {
-  "name": "dyad",
-  "productName": "dyad",
+  "name": "asi-inovation-build-apps",
+  "productName": "ASI Inovation Build Apps",
   "version": "0.23.0-beta.1",
   "description": "Free, local, open-source AI app builder",
   "main": ".vite/build/main.js",

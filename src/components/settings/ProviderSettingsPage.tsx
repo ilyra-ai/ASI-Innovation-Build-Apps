@@ -55,7 +55,7 @@ export function ProviderSettingsPage({ provider }: ProviderSettingsPageProps) {
 
   // Use fetched data (or defaults for Dyad)
   const providerDisplayName = isDyad
-    ? "Dyad"
+    ? "ASI Inovation Build Apps"
     : (providerData?.name ?? "Unknown Provider");
   const providerWebsiteUrl = isDyad
     ? "https://academy.dyad.sh/settings"
