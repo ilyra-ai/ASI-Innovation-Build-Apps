@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 import { userSettingsAtom, envVarsAtom } from "@/atoms/appAtoms";
 import { IpcClient } from "@/ipc/ipc_client";
 import { type UserSettings } from "@/lib/schemas";
+import type { PostHog } from "posthog-js";
 import { usePostHog } from "posthog-js/react";
 import { useAppVersion } from "./useAppVersion";
 
@@ -36,7 +37,8 @@ export function useSettings() {
         ipcClient.getEnvVars(),
       ]);
       processSettingsForTelemetry(userSettings);
-      if (!isInitialLoad && appVersion) {
+      applyTelemetryPreferences(posthog, userSettings);
+      if (!isInitialLoad && appVersion && userSettings.telemetryConsent === "opted_in") {
         posthog.capture("app:initial-load", {
           isPro: userSettings.enableDyadPro !== false,
           appVersion,
@@ -52,7 +54,7 @@ export function useSettings() {
     } finally {
       setLoading(false);
     }
-  }, [setSettingsAtom, setEnvVarsAtom, appVersion]);
+  }, [setSettingsAtom, setEnvVarsAtom, appVersion, posthog]);
 
   useEffect(() => {
     // Only run once on mount, dependencies are stable getters/setters
@@ -66,6 +68,7 @@ export function useSettings() {
       const updatedSettings = await ipcClient.setUserSettings(newSettings);
       setSettingsAtom(updatedSettings);
       processSettingsForTelemetry(updatedSettings);
+      applyTelemetryPreferences(posthog, updatedSettings);
 
       setError(null);
       return updatedSettings;
@@ -100,7 +103,7 @@ function processSettingsForTelemetry(settings: UserSettings) {
   } else {
     window.localStorage.removeItem(TELEMETRY_CONSENT_KEY);
   }
-  if (settings.telemetryUserId) {
+  if (settings.telemetryConsent === "opted_in" && settings.telemetryUserId) {
     window.localStorage.setItem(
       TELEMETRY_USER_ID_KEY,
       settings.telemetryUserId,
@@ -108,4 +111,19 @@ function processSettingsForTelemetry(settings: UserSettings) {
   } else {
     window.localStorage.removeItem(TELEMETRY_USER_ID_KEY);
   }
+}
+
+function applyTelemetryPreferences(posthog: PostHog | undefined, settings: UserSettings) {
+  if (!posthog) {
+    return;
+  }
+  if (settings.telemetryConsent === "opted_in") {
+    posthog.opt_in_capturing({ captureEventName: false });
+    if (settings.telemetryUserId) {
+      posthog.identify(settings.telemetryUserId);
+    }
+    return;
+  }
+  posthog.reset();
+  posthog.opt_out_capturing();
 }
