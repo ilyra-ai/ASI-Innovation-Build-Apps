@@ -481,7 +481,7 @@ export const CLOUD_PROVIDERS: Record<
     gatewayPrefix: "openrouter/",
   },
   auto: {
-    displayName: "Dyad",
+    displayName: "ASI Inovation Build Apps",
     websiteUrl: "https://academy.dyad.sh/settings",
     gatewayPrefix: "dyad/",
   },
