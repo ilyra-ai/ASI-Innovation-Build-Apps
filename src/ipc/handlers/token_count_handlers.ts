@@ -22,6 +22,7 @@ import { validateChatContext } from "../utils/context_paths_utils";
 import { readSettings } from "@/main/settings";
 import { extractMentionedAppsCodebases } from "../utils/mention_apps";
 import { parseAppMentions } from "@/shared/parse_mention_apps";
+import { buildDateContext } from "../utils/date_context";
 
 const logger = log.scope("token_count_handlers");
 
@@ -77,6 +78,8 @@ export function registerTokenCountHandlers() {
       ) {
         systemPrompt += "\n\n" + SUPABASE_NOT_AVAILABLE_SYSTEM_PROMPT;
       }
+      const dateContext = buildDateContext();
+      systemPrompt += `\n\n${dateContext}`;
 
       const systemPromptTokens = estimateTokens(systemPrompt + supabaseContext);
 

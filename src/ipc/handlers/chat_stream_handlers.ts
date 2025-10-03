@@ -49,6 +49,7 @@ import { mcpServers } from "../../db/schema";
 import { requireMcpToolConsent } from "../utils/mcp_consent";
 
 import { getExtraProviderOptions } from "../utils/thinking_utils";
+import { buildDateContext } from "../utils/date_context";
 
 import { safeSend } from "../utils/safe_sender";
 import { cleanFullResponse } from "../utils/cleanFullResponse";
@@ -538,6 +539,7 @@ ${componentSnippet}
               ? "build"
               : settings.selectedChatMode,
         });
+        const dateContext = buildDateContext();
 
         // Add information about mentioned apps if any
         if (otherAppsCodebaseInfo) {
@@ -615,6 +617,7 @@ This conversation includes one or more image attachments. When the user uploads 
 5. For screenshots of code or errors, try to identify the issue or explain the code.
 `;
         }
+        systemPrompt += `\n\n${dateContext}`;
 
         const codebasePrefix = isEngineEnabled
           ? // No codebase prefix if engine is set, we will take of it there.
