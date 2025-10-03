@@ -262,7 +262,7 @@ export function isDyadProEnabled(settings: UserSettings): boolean {
   return settings.enableDyadPro !== false;
 }
 
-export function hasDyadProKey(settings: UserSettings): boolean {
+export function hasDyadProKey(_settings: UserSettings): boolean {
   return true;
 }
 
